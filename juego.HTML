@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Rápido</title>
+    <link rel="stylesheet" type="text/css" href="juego.css">
+    <script>
+        let timer;
+        let timeLeft = 35; 
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").textContent = `Tiempo restante: ${timeLeft}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("timer").textContent = "¡Perdiste por loca!";
+                    document.getElementById("quizForm").reset();
+                    playSound();
+                }
+            }, 1000);
+        }
+
+        function playSound() {
+            console.log('Reproduciendo sonido...');
+            const audio = new Audio('audiolamonda.mp3');
+            audio.play();
+        }
+
+        function normalizeText(text) {
+            const normalizedText = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            return normalizedText;
+        }
+
+        function checkAnswers() {
+            const answers = [
+                "París", 
+                "Asia", 
+                "Pacífico", 
+                "Marte", 
+                "Leonardo da Vinci"
+            ];
+            const userAnswers = [
+                document.getElementById("q1").value,
+                document.getElementById("q2").value,
+                document.getElementById("q3").value,
+                document.getElementById("q4").value,
+                document.getElementById("q5").value
+            ];
+
+            let correctAnswersText = "Respuestas correctas:\n";
+
+            for (let i = 0; i < answers.length; i++) {
+                const inputField = document.getElementById("q" + (i + 1));
+                if (normalizeText(userAnswers[i]) === normalizeText(answers[i])) {
+                    inputField.className = "correct";
+                } else {
+                    inputField.className = "incorrect";
+                }
+                correctAnswersText += `Pregunta ${i + 1}: ${answers[i]}\n`;
+            }
+
+            clearInterval(timer);
+
+            const currentDateTime = new Date();
+            const dateTimeString = currentDateTime.toLocaleString();
+
+            alert(`${correctAnswersText}\nFecha y hora: ${dateTimeString}`);
+        }
+
+        function resetQuiz() {
+            document.getElementById("quizForm").reset();
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById("q" + i).className = ""; 
+            }
+            clearInterval(timer);
+            timeLeft = 35; 
+            document.getElementById("timer").textContent = `Tiempo restante: ${timeLeft}s`;
+            startTimer(); 
+        }
+
+        window.onload = startTimer;
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>¡Responde lo más rápido que puedas!</h1>
+        <form id="quizForm">
+            <div class="question">
+                <label for="q1">1. ¿Cuál es la capital de Francia?</label><br>
+                <input type="text" id="q1"><br>
+            </div>
+            <div class="question">
+                <label for="q2">2. ¿Cuál es el continente más grande del mundo?</label><br>
+                <input type="text" id="q2"><br>
+            </div>
+            <div class="question">
+                <label for="q3">3. ¿Cuál es el océano más grande del mundo?</label><br>
+                <input type="text" id="q3"><br>
+            </div>
+            <div class="question">
+                <label for="q4">4. ¿Qué planeta es conocido como el "Planeta Rojo"?</label><br>
+                <input type="text" id="q4"><br>
+            </div>
+            <div class="question">
+                <label for="q5">5. ¿Quién pintó la Mona Lisa?</label><br>
+                <input type="text" id="q5"><br>
+            </div>
+        </form>
+        <div class="buttons">
+            <button type="button" onclick="checkAnswers()">Terminar</button>
+            <button type="button" onclick="resetQuiz()">Repetir</button>
+        </div>
+        <p id="timer">Tiempo restante: 35s</p>
+    </div>
+</body>
+</html>
